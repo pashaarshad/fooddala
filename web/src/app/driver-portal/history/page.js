@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FiArrowLeft, FiClock, FiMapPin, FiDollarSign, FiStar } from 'react-icons/fi';
+import { FiArrowLeft, FiClock, FiMapPin, FiDollarSign, FiStar, FiCheck } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
 import { orderAPI } from '@/services/api';
 import styles from './page.module.css';

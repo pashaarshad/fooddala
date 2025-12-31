@@ -532,6 +532,16 @@
     padding: 60px 20px;
   }
 
+  .locationSearchBar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .orderNowBtn {
+    width: 100%;
+    height: 48px;
+  }
+
   .heroTitle {
     font-size: 32px;
   }

@@ -140,10 +140,16 @@ export default function Navbar() {
                         </Link>
                     ))}
                     {!isAuthenticated && (
-                        <Link href="/login" className={styles.mobileLink} onClick={() => setMobileMenuOpen(false)}>
-                            <FiUser />
-                            <span>Login</span>
-                        </Link>
+                        <>
+                            <Link href="/login" className={styles.mobileLink} onClick={() => setMobileMenuOpen(false)}>
+                                <FiUser />
+                                <span>Login</span>
+                            </Link>
+                            <Link href="/register" className={styles.mobileLink} onClick={() => setMobileMenuOpen(false)}>
+                                <FiUser />
+                                <span>Register</span>
+                            </Link>
+                        </>
                     )}
                 </div>
             )}

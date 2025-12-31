@@ -342,7 +342,8 @@
 @media (max-width: 900px) {
 
     .navLinks,
-    .location {
+    .location,
+    .authButtons {
         display: none;
     }
 
