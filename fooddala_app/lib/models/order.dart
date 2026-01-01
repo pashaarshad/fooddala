@@ -93,9 +93,27 @@ class OrderItem {
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
+    // menuItem can be either an ObjectId string or a full object
+    String itemId = '';
+    String itemName = 'Item';
+
+    if (json['menuItem'] != null) {
+      if (json['menuItem'] is Map) {
+        itemId = (json['menuItem']['_id'] ?? '').toString();
+        itemName = (json['menuItem']['name'] ?? json['name'] ?? 'Item')
+            .toString();
+      } else {
+        itemId = json['menuItem'].toString();
+        itemName = (json['name'] ?? 'Item').toString();
+      }
+    } else {
+      itemId = (json['_id'] ?? '').toString();
+      itemName = (json['name'] ?? 'Item').toString();
+    }
+
     return OrderItem(
-      id: (json['menuItem']?['_id'] ?? json['_id'] ?? '').toString(),
-      name: (json['menuItem']?['name'] ?? json['name'] ?? 'Item').toString(),
+      id: itemId,
+      name: itemName,
       price: double.tryParse((json['price'] ?? 0).toString()) ?? 0.0,
       quantity: int.tryParse((json['quantity'] ?? 1).toString()) ?? 1,
     );
@@ -113,7 +131,7 @@ class OrderRestaurant {
     return OrderRestaurant(
       id: (json['_id'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
-      image: json['image']?.toString(),
+      image: (json['logo'] ?? json['image'])?.toString(),
     );
   }
 }

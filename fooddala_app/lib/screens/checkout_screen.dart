@@ -5,6 +5,7 @@ import '../providers/cart_provider.dart';
 import '../providers/order_provider.dart';
 import '../utils/theme.dart';
 import 'order_success_screen.dart';
+import 'payment_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -76,13 +77,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         // Clear cart
         cart.clear();
 
-        // Navigate to success screen
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (ctx) =>
-                OrderSuccessScreen(orderNumber: orderNumber, total: total),
-          ),
-        );
+        // Navigate based on payment method
+        if (_paymentMethod == 'online') {
+          // Show payment screen with QR code
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (ctx) =>
+                  PaymentScreen(orderNumber: orderNumber, total: total),
+            ),
+          );
+        } else {
+          // Cash on delivery - go directly to success
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (ctx) =>
+                  OrderSuccessScreen(orderNumber: orderNumber, total: total),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

@@ -14,124 +14,100 @@ class OrderSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.darkBackground,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Success Animation
+              const Spacer(),
+
+              // Success Icon
               Container(
-                width: 120,
-                height: 120,
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.2),
+                  color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check_circle,
-                  size: 80,
-                  color: Colors.green,
-                ),
+                child: const Icon(Icons.check, size: 60, color: Colors.white),
               ),
               const SizedBox(height: 32),
 
+              // Title
               const Text(
-                'Order Placed Successfully!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+                'Order Placed!',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
-
+              const SizedBox(height: 8),
               Text(
-                'Your order #$orderNumber has been placed',
-                style: TextStyle(color: AppTheme.textGrey, fontSize: 16),
-                textAlign: TextAlign.center,
+                'Order #$orderNumber',
+                style: TextStyle(color: AppTheme.textGrey, fontSize: 14),
               ),
               const SizedBox(height: 32),
 
-              // Order Details Card
-              Card(
-                color: AppTheme.cardDark,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      _buildDetailRow('Order Number', orderNumber),
-                      const Divider(height: 24),
-                      _buildDetailRow(
-                        'Total Amount',
-                        '₹${total.toStringAsFixed(0)}',
-                      ),
-                      const Divider(height: 24),
-                      _buildDetailRow('Payment', 'Cash on Delivery'),
-                      const Divider(height: 24),
-                      _buildDetailRow('Est. Delivery', '30-45 mins'),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Info Text
+              // Amount
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: AppTheme.cardDark,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.info_outline, color: Colors.blue),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'You can track your order in the Orders tab',
-                        style: TextStyle(color: Colors.blue[200]),
+                    Text('Total: ', style: TextStyle(color: AppTheme.textGrey)),
+                    Text(
+                      '₹${total.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // Delivery time
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.access_time, color: AppTheme.textGrey, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Estimated delivery: 30-45 mins',
+                    style: TextStyle(color: AppTheme.textGrey),
+                  ),
+                ],
+              ),
 
               const Spacer(),
 
-              // Buttons
+              // Done Button
               SizedBox(
                 width: double.infinity,
+                height: 54,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Text(
-                    'BACK TO HOME',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    // Navigate to orders tab
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppTheme.primaryColor),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(
-                    'TRACK ORDER',
+                    'Done',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: AppTheme.primaryColor,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -140,16 +116,6 @@ class OrderSuccessScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: TextStyle(color: AppTheme.textGrey)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-      ],
     );
   }
 }

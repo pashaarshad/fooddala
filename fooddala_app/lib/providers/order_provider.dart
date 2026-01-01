@@ -18,10 +18,17 @@ class OrderProvider with ChangeNotifier {
 
     try {
       final response = await _api.get('/orders');
-      if (response['success']) {
-        final List<dynamic> data =
-            response['data']['orders'] ?? response['data'] ?? [];
-        _orders = data.map((json) => Order.fromJson(json)).toList();
+      if (response['success'] == true) {
+        List<dynamic> data = [];
+        if (response['data'] is List) {
+          data = response['data'];
+        } else if (response['data'] is Map) {
+          data = response['data']['orders'] ?? [];
+        }
+        _orders = data
+            .whereType<Map<String, dynamic>>()
+            .map((json) => Order.fromJson(json))
+            .toList();
       }
     } catch (e) {
       print('Error fetching orders: $e');
@@ -41,20 +48,39 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // Ensure all item IDs are strings
+      final sanitizedItems = items.map((item) {
+        return {
+          'menuItemId': item['menuItemId'].toString(),
+          'quantity': int.tryParse(item['quantity'].toString()) ?? 1,
+        };
+      }).toList();
+
       final response = await _api.post('/orders', {
-        'restaurantId': restaurantId,
-        'items': items,
+        'restaurantId': restaurantId.toString(),
+        'items': sanitizedItems,
         'deliveryAddress': deliveryAddress,
-        'paymentMethod': paymentMethod,
+        'paymentMethod': paymentMethod.toString(),
       });
 
-      if (response['success']) {
-        final order = Order.fromJson(response['data']['order']);
-        _currentOrder = order;
-        _orders.insert(0, order);
-        notifyListeners();
-        return order;
+      if (response['success'] == true) {
+        // Handle different response structures
+        dynamic orderData;
+        if (response['data'] is Map) {
+          orderData = response['data']['order'] ?? response['data'];
+        } else {
+          orderData = response['data'];
+        }
+
+        if (orderData != null && orderData is Map<String, dynamic>) {
+          final order = Order.fromJson(orderData);
+          _currentOrder = order;
+          _orders.insert(0, order);
+          notifyListeners();
+          return order;
+        }
       }
+      throw Exception(response['message'] ?? 'Failed to create order');
     } catch (e) {
       print('Error creating order: $e');
       rethrow;
@@ -62,7 +88,6 @@ class OrderProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-    return null;
   }
 
   Future<void> fetchOrderById(String orderId) async {
@@ -71,8 +96,16 @@ class OrderProvider with ChangeNotifier {
 
     try {
       final response = await _api.get('/orders/$orderId');
-      if (response['success']) {
-        _currentOrder = Order.fromJson(response['data']['order']);
+      if (response['success'] == true) {
+        dynamic orderData;
+        if (response['data'] is Map) {
+          orderData = response['data']['order'] ?? response['data'];
+        } else {
+          orderData = response['data'];
+        }
+        if (orderData is Map<String, dynamic>) {
+          _currentOrder = Order.fromJson(orderData);
+        }
       }
     } catch (e) {
       print('Error fetching order: $e');

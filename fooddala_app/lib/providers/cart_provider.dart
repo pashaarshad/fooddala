@@ -54,7 +54,7 @@ class CartProvider with ChangeNotifier {
       _items.update(
         productId,
         (existingCartItem) => CartItem(
-          id: existingCartItem.id,
+          id: productId, // Use the actual menu item ID
           name: existingCartItem.name,
           price: existingCartItem.price,
           quantity: existingCartItem.quantity + 1,
@@ -65,7 +65,7 @@ class CartProvider with ChangeNotifier {
       _items.putIfAbsent(
         productId,
         () => CartItem(
-          id: DateTime.now().toString(),
+          id: productId, // Use the actual menu item ID
           name: title,
           price: price,
           quantity: 1,
