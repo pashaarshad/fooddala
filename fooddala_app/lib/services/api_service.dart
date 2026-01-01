@@ -40,6 +40,20 @@ class ApiService {
     }
   }
 
+  Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final headers = await getHeaders();
+      final response = await http.put(
+        Uri.parse('${AppConstants.baseUrl}$endpoint'),
+        headers: headers,
+        body: json.encode(data),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Network Error: $e');
+    }
+  }
+
   dynamic _handleResponse(http.Response response) {
     // 200: OK, 201: Created
     if (response.statusCode >= 200 && response.statusCode < 300) {

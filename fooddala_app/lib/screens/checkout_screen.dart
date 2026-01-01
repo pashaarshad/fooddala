@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import '../providers/cart_provider.dart';
 import '../providers/order_provider.dart';
 import '../utils/theme.dart';
@@ -17,13 +19,15 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _formKey = GlobalKey<FormState>();
   String _paymentMethod = 'cod';
+  String _addressLabel = 'home';
   bool _isLoading = false;
+  bool _isLoadingLocation = false;
 
   // Address fields
-  final _streetController = TextEditingController(text: 'Demo Street 123');
-  final _cityController = TextEditingController(text: 'Bengaluru');
-  final _stateController = TextEditingController(text: 'Karnataka');
-  final _pincodeController = TextEditingController(text: '560001');
+  final _streetController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _pincodeController = TextEditingController();
   final _phoneController = TextEditingController(text: '9876543210');
 
   @override
@@ -36,6 +40,106 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
+  // Reverse geocode using OpenStreetMap Nominatim (works on web)
+  Future<void> _reverseGeocode(double lat, double lng) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng&addressdetails=1',
+        ),
+        headers: {'User-Agent': 'Fooddala App'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data != null && data['address'] != null) {
+          final addr = data['address'];
+
+          // Build street from available components
+          String street = '';
+          if (addr['road'] != null) street = addr['road'];
+          if (addr['neighbourhood'] != null) {
+            street =
+                addr['neighbourhood'] + (street.isNotEmpty ? ', $street' : '');
+          }
+          if (addr['suburb'] != null) {
+            street = addr['suburb'] + (street.isNotEmpty ? ', $street' : '');
+          }
+
+          // If still no street, use display name
+          if (street.isEmpty && data['display_name'] != null) {
+            final parts = data['display_name'].toString().split(',');
+            street = parts.take(2).join(', ').trim();
+          }
+
+          setState(() {
+            _streetController.text = street;
+            _cityController.text =
+                addr['city'] ??
+                addr['town'] ??
+                addr['village'] ??
+                addr['county'] ??
+                '';
+            _stateController.text = addr['state'] ?? '';
+            _pincodeController.text = addr['postcode'] ?? '';
+          });
+        }
+      }
+    } catch (e) {
+      print('Geocoding error: $e');
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLoadingLocation = true);
+
+    try {
+      // Check permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('Location permission denied');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception('Location permissions permanently denied');
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Use Nominatim API for reverse geocoding (works on web)
+      await _reverseGeocode(position.latitude, position.longitude);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location detected!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not get location: ${e.toString().replaceAll('Exception:', '')}',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingLocation = false);
+    }
+  }
+
   Future<void> _placeOrder() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -45,17 +149,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final cart = Provider.of<CartProvider>(context, listen: false);
       final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
-      // Get restaurant ID from cart items
       final restaurantId = cart.items.values.firstOrNull?.restaurantId ?? '';
 
-      // Build items list
       final items = cart.items.entries.map((entry) {
         return {'menuItemId': entry.key, 'quantity': entry.value.quantity};
       }).toList();
 
-      // Build address
       final deliveryAddress = {
-        'label': 'home',
+        'label': _addressLabel,
         'street': _streetController.text,
         'city': _cityController.text,
         'state': _stateController.text,
@@ -74,12 +175,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         final orderNumber = order.orderNumber;
         final total = order.total;
 
-        // Clear cart
         cart.clear();
 
-        // Navigate based on payment method
         if (_paymentMethod == 'online') {
-          // Show payment screen with QR code
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (ctx) =>
@@ -87,7 +185,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
           );
         } else {
-          // Cash on delivery - go directly to success
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (ctx) =>
@@ -129,11 +226,44 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Delivery Address Section
-              const Text(
-                'Delivery Address',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Delivery Address',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  // GPS Button
+                  TextButton.icon(
+                    onPressed: _isLoadingLocation ? null : _getCurrentLocation,
+                    icon: _isLoadingLocation
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(Icons.my_location, color: AppTheme.primaryColor),
+                    label: Text(
+                      'Use GPS',
+                      style: TextStyle(color: AppTheme.primaryColor),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
+
+              // Address Label Selection
+              Row(
+                children: [
+                  _buildLabelChip('home', Icons.home, 'Home'),
+                  const SizedBox(width: 8),
+                  _buildLabelChip('work', Icons.work, 'Work'),
+                  const SizedBox(width: 8),
+                  _buildLabelChip('other', Icons.location_on, 'Other'),
+                ],
+              ),
+              const SizedBox(height: 12),
+
               Card(
                 color: AppTheme.cardDark,
                 child: Padding(
@@ -144,7 +274,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         controller: _streetController,
                         decoration: const InputDecoration(
                           labelText: 'Street Address',
-                          prefixIcon: Icon(Icons.home),
+                          hintText: 'Enter your street address',
+                          prefixIcon: Icon(Icons.location_on),
                         ),
                         validator: (v) => v!.isEmpty ? 'Required' : null,
                       ),
@@ -330,6 +461,41 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabelChip(String value, IconData icon, String label) {
+    final isSelected = _addressLabel == value;
+    return GestureDetector(
+      onTap: () => setState(() => _addressLabel = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primaryColor : AppTheme.cardDark,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryColor : Colors.grey,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? Colors.white : Colors.grey,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
       ),
     );

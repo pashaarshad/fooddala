@@ -28,6 +28,20 @@ class Order {
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    // Handle restaurant - can be string ID or object
+    OrderRestaurant? restaurant;
+    if (json['restaurant'] != null) {
+      if (json['restaurant'] is Map) {
+        restaurant = OrderRestaurant.fromJson(json['restaurant']);
+      } else {
+        // Restaurant is just an ID string
+        restaurant = OrderRestaurant(
+          id: json['restaurant'].toString(),
+          name: 'Restaurant',
+        );
+      }
+    }
+
     return Order(
       id: (json['_id'] ?? '').toString(),
       orderNumber: (json['orderNumber'] ?? '').toString(),
@@ -40,18 +54,19 @@ class Order {
       createdAt:
           DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
           DateTime.now(),
-      restaurant: json['restaurant'] != null
-          ? OrderRestaurant.fromJson(json['restaurant'])
-          : null,
+      restaurant: restaurant,
       items:
           (json['items'] as List<dynamic>?)
-              ?.map((item) => OrderItem.fromJson(item))
+              ?.map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
               .toList() ??
           [],
-      deliveryAddress: json['deliveryAddress'] != null
+      deliveryAddress:
+          json['deliveryAddress'] != null && json['deliveryAddress'] is Map
           ? DeliveryAddress.fromJson(json['deliveryAddress'])
           : null,
-      driver: json['driver'] != null ? Driver.fromJson(json['driver']) : null,
+      driver: json['driver'] != null && json['driver'] is Map
+          ? Driver.fromJson(json['driver'])
+          : null,
     );
   }
 

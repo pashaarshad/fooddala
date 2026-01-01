@@ -5,6 +5,8 @@ import 'providers/restaurant_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/favorites_provider.dart';
+import 'providers/restaurant_order_provider.dart';
+import 'providers/driver_order_provider.dart';
 import 'utils/theme.dart';
 import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => RestaurantOrderProvider()),
+        ChangeNotifierProvider(create: (_) => DriverOrderProvider()),
       ],
       child: MaterialApp(
         title: 'Fooddala',
