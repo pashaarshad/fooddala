@@ -21,14 +21,14 @@ class MenuItem {
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(
-      id: json['_id'],
-      name: json['name'],
-      description: json['description'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
-      category: json['category'] ?? 'General',
-      image: json['image'],
-      isVeg: json['isVeg'] ?? true,
-      isAvailable: json['isAvailable'] ?? true,
+      id: (json['_id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      price: double.tryParse((json['price'] ?? 0).toString()) ?? 0.0,
+      category: (json['category'] ?? 'General').toString(),
+      image: json['image']?.toString(),
+      isVeg: json['isVeg'] == true,
+      isAvailable: json['isAvailable'] != false,
     );
   }
 }

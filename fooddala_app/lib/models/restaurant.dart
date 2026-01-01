@@ -25,22 +25,23 @@ class Restaurant {
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     return Restaurant(
-      id: json['_id'],
-      name: json['name'],
-      description: json['description'] ?? '',
+      id: (json['_id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
       address: json['address'] is Map
-          ? json['address']['street'] ?? ''
-          : json['address'] ?? '',
+          ? (json['address']['street'] ?? '').toString()
+          : (json['address'] ?? '').toString(),
       cuisine:
           (json['cuisine'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      rating: (json['rating'] ?? 0).toDouble(),
-      deliveryTime: json['avgDeliveryTime'] ?? 30,
-      deliveryFee: json['deliveryFee'] ?? 0,
-      image: json['image'],
-      isOpen: json['isOpen'] ?? true,
+      rating: double.tryParse((json['rating'] ?? 0).toString()) ?? 0.0,
+      deliveryTime:
+          int.tryParse((json['avgDeliveryTime'] ?? 30).toString()) ?? 30,
+      deliveryFee: int.tryParse((json['deliveryFee'] ?? 0).toString()) ?? 0,
+      image: json['image']?.toString(),
+      isOpen: json['isOpen'] == true,
     );
   }
 }

@@ -41,7 +41,7 @@ class RestaurantProvider with ChangeNotifier {
     try {
       final response = await _api.get('/restaurants/$restaurantId/menu');
       if (response['success']) {
-        final List<dynamic> data = response['data'];
+        final List<dynamic> data = response['data']['items'];
         _menuItems = data.map((json) => MenuItem.fromJson(json)).toList();
       }
     } catch (e) {

@@ -362,6 +362,7 @@ class MenuItemCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
+            // Item Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,91 +393,128 @@ class MenuItemCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            // Add/Quantity Button
-            quantity > 0
-                ? Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.primaryColor),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        InkWell(
-                          onTap: () => cart.removeSingleItem(item.id),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(
-                              Icons.remove,
-                              color: AppTheme.primaryColor,
-                              size: 18,
+            // Image and Add Button Column
+            Column(
+              children: [
+                if (item.image != null && item.image!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        item.image!,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, error, stackTrace) {
+                          return Container(
+                            width: 100,
+                            height: 100,
+                            color: Colors.grey[800],
+                            child: const Icon(
+                              Icons.fastfood,
+                              color: Colors.grey,
                             ),
-                          ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                quantity > 0
+                    ? Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppTheme.primaryColor),
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppTheme.cardDark,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () => cart.removeSingleItem(item.id),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                child: Icon(
+                                  Icons.remove,
+                                  color: AppTheme.primaryColor,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              quantity.toString(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                cart.addItem(
+                                  item.id,
+                                  item.price,
+                                  item.name,
+                                  restaurantId,
+                                );
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                child: Icon(
+                                  Icons.add,
+                                  color: AppTheme.primaryColor,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(
+                        width: 100,
+                        child: OutlinedButton(
+                          onPressed: item.isAvailable
+                              ? () {
+                                  cart.addItem(
+                                    item.id,
+                                    item.price,
+                                    item.name,
+                                    restaurantId,
+                                  );
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).hideCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('${item.name} added!'),
+                                      duration: const Duration(seconds: 1),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              : null,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppTheme.primaryColor,
+                            side: BorderSide(
+                              color: item.isAvailable
+                                  ? AppTheme.primaryColor
+                                  : Colors.grey,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            backgroundColor: AppTheme.cardDark,
+                          ),
                           child: Text(
-                            quantity.toString(),
+                            item.isAvailable ? 'ADD' : 'N/A',
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
-                        InkWell(
-                          onTap: () {
-                            cart.addItem(
-                              item.id,
-                              item.price,
-                              item.name,
-                              restaurantId,
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(
-                              Icons.add,
-                              color: AppTheme.primaryColor,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : OutlinedButton(
-                    onPressed: item.isAvailable
-                        ? () {
-                            cart.addItem(
-                              item.id,
-                              item.price,
-                              item.name,
-                              restaurantId,
-                            );
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${item.name} added!'),
-                                duration: const Duration(seconds: 1),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          }
-                        : null,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.primaryColor,
-                      side: BorderSide(
-                        color: item.isAvailable
-                            ? AppTheme.primaryColor
-                            : Colors.grey,
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                    ),
-                    child: Text(
-                      item.isAvailable ? 'ADD' : 'N/A',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
+              ],
+            ),
           ],
         ),
       ),

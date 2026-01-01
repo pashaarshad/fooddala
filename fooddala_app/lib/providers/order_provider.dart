@@ -49,7 +49,7 @@ class OrderProvider with ChangeNotifier {
       });
 
       if (response['success']) {
-        final order = Order.fromJson(response['data']);
+        final order = Order.fromJson(response['data']['order']);
         _currentOrder = order;
         _orders.insert(0, order);
         notifyListeners();
@@ -72,7 +72,7 @@ class OrderProvider with ChangeNotifier {
     try {
       final response = await _api.get('/orders/$orderId');
       if (response['success']) {
-        _currentOrder = Order.fromJson(response['data']);
+        _currentOrder = Order.fromJson(response['data']['order']);
       }
     } catch (e) {
       print('Error fetching order: $e');

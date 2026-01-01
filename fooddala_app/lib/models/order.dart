@@ -29,14 +29,17 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
-      id: json['_id'] ?? '',
-      orderNumber: json['orderNumber'] ?? '',
-      status: json['status'] ?? 'pending',
-      total: (json['total'] ?? 0).toDouble(),
-      deliveryFee: (json['deliveryFee'] ?? 0).toDouble(),
-      paymentMethod: json['paymentMethod'] ?? 'cod',
-      paymentStatus: json['paymentStatus'],
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      id: (json['_id'] ?? '').toString(),
+      orderNumber: (json['orderNumber'] ?? '').toString(),
+      status: (json['status'] ?? 'pending').toString(),
+      total: double.tryParse((json['total'] ?? 0).toString()) ?? 0.0,
+      deliveryFee:
+          double.tryParse((json['deliveryFee'] ?? 0).toString()) ?? 0.0,
+      paymentMethod: (json['paymentMethod'] ?? 'cod').toString(),
+      paymentStatus: json['paymentStatus']?.toString(),
+      createdAt:
+          DateTime.tryParse((json['createdAt'] ?? '').toString()) ??
+          DateTime.now(),
       restaurant: json['restaurant'] != null
           ? OrderRestaurant.fromJson(json['restaurant'])
           : null,
@@ -91,10 +94,10 @@ class OrderItem {
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
-      id: json['menuItem']?['_id'] ?? json['_id'] ?? '',
-      name: json['menuItem']?['name'] ?? json['name'] ?? 'Item',
-      price: (json['price'] ?? 0).toDouble(),
-      quantity: json['quantity'] ?? 1,
+      id: (json['menuItem']?['_id'] ?? json['_id'] ?? '').toString(),
+      name: (json['menuItem']?['name'] ?? json['name'] ?? 'Item').toString(),
+      price: double.tryParse((json['price'] ?? 0).toString()) ?? 0.0,
+      quantity: int.tryParse((json['quantity'] ?? 1).toString()) ?? 1,
     );
   }
 }
@@ -108,9 +111,9 @@ class OrderRestaurant {
 
   factory OrderRestaurant.fromJson(Map<String, dynamic> json) {
     return OrderRestaurant(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      image: json['image'],
+      id: (json['_id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      image: json['image']?.toString(),
     );
   }
 }
@@ -130,10 +133,10 @@ class DeliveryAddress {
 
   factory DeliveryAddress.fromJson(Map<String, dynamic> json) {
     return DeliveryAddress(
-      street: json['street'] ?? '',
-      city: json['city'] ?? '',
-      state: json['state'] ?? '',
-      pincode: json['pincode'] ?? '',
+      street: (json['street'] ?? '').toString(),
+      city: (json['city'] ?? '').toString(),
+      state: (json['state'] ?? '').toString(),
+      pincode: (json['pincode'] ?? '').toString(),
     );
   }
 
@@ -149,9 +152,9 @@ class Driver {
 
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      phone: json['phone'],
+      id: (json['_id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      phone: json['phone']?.toString(),
     );
   }
 }

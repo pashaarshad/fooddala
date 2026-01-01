@@ -1,18 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../utils/theme.dart';
 import 'home_tab.dart';
 import 'search_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
+import 'restaurant_dashboard_screen.dart';
+import 'driver_dashboard_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+    final role = auth.user?.role;
+
+    if (role == 'restaurant') {
+      return const RestaurantDashboardScreen();
+    } else if (role == 'driver') {
+      return const DriverDashboardScreen();
+    }
+
+    return const CustomerHomeScreen();
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class CustomerHomeScreen extends StatefulWidget {
+  const CustomerHomeScreen({super.key});
+
+  @override
+  State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
+}
+
+class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
