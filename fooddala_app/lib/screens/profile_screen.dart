@@ -234,12 +234,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             Text(
-              'Made with ❤️ by Fooddala',
+              'Created by Arshad Pasha',
               style: TextStyle(color: AppTheme.textGrey, fontSize: 12),
             ),
             const SizedBox(height: 4),
             Text(
-              'Version 1.0.0',
+              'Fooddala v1.0.0',
               style: TextStyle(color: AppTheme.textGrey, fontSize: 12),
             ),
             const SizedBox(height: 80),

@@ -83,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Delicious food delivered fast',
+                      'Created by Arshad Pasha',
                       style: TextStyle(color: AppTheme.textGrey, fontSize: 16),
                     ),
                     const SizedBox(height: 48),

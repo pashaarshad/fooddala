@@ -15,7 +15,7 @@ export default function Footer() {
                             <span className={styles.logoText}>Fooddala</span>
                         </Link>
                         <p className={styles.tagline}>
-                            Delivering happiness, one meal at a time. Order from the best restaurants near you.
+                            Created by Arshad Pasha. Delivering happiness, one meal at a time.
                         </p>
                         <div className={styles.social}>
                             <a href="#" className={styles.socialLink}><FiFacebook /></a>
@@ -60,7 +60,7 @@ export default function Footer() {
                 </div>
 
                 <div className={styles.bottom}>
-                    <p>© 2024 Fooddala. All rights reserved.</p>
+                    <p>© 2024 Fooddala. Created by Arshad Pasha. All rights reserved.</p>
                     <div className={styles.legal}>
                         <Link href="/privacy">Privacy Policy</Link>
                         <Link href="/terms">Terms of Service</Link>
