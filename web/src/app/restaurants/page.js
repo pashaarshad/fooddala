@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FiSearch, FiStar, FiClock, FiFilter, FiX, FiTruck } from 'react-icons/fi';
 import { restaurantAPI } from '@/services/api';
 import styles from './page.module.css';
 
-export default function RestaurantsPage() {
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
+function RestaurantsContent() {
     const searchParams = useSearchParams();
     const [restaurants, setRestaurants] = useState([]);
     const [cuisines, setCuisines] = useState([]);
@@ -240,5 +243,39 @@ export default function RestaurantsPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function LoadingSkeleton() {
+    return (
+        <div className={styles.page}>
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <div>
+                        <h1>Restaurants</h1>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+                <div className={styles.grid}>
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className={styles.skeletonCard}>
+                            <div className={styles.skeletonImage}></div>
+                            <div className={styles.skeletonContent}>
+                                <div className={styles.skeletonTitle}></div>
+                                <div className={styles.skeletonText}></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function RestaurantsPage() {
+    return (
+        <Suspense fallback={<LoadingSkeleton />}>
+            <RestaurantsContent />
+        </Suspense>
     );
 }
