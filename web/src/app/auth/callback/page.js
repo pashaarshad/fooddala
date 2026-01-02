@@ -1,12 +1,13 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { setUser } = useAuth();
@@ -52,5 +53,20 @@ export default function AuthCallbackPage() {
                 <p>{status}</p>
             </div>
         </div>
+    );
+}
+
+export default function AuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className={styles.container}>
+                <div className={styles.card}>
+                    <div className={styles.spinner}></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        }>
+            <AuthCallbackContent />
+        </Suspense>
     );
 }

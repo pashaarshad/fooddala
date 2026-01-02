@@ -1,0 +1,6 @@
+# ============================================
+# VERCEL DEPLOYMENT - ENVIRONMENT VARIABLES
+# ============================================
+# Add this to Vercel's Environment Variables section
+
+NEXT_PUBLIC_API_URL=https://fooddala.onrender.com/api
