@@ -125,7 +125,11 @@ class _AuthScreenState extends State<AuthScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('🍕', style: TextStyle(fontSize: 40)),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 50,
+                      width: 50,
+                    ),
                     const SizedBox(width: 10),
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(

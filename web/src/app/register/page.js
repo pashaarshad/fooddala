@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
@@ -58,7 +59,7 @@ export default function RegisterPage() {
                 <div className={styles.brandingSection}>
                     <div className={styles.brandingContent}>
                         <div className={styles.logo}>
-                            <span className={styles.logoIcon}>🍕</span>
+                            <Image src="/coollogo.png" alt="Fooddala" width={50} height={50} />
                             <span className={styles.logoText}>Fooddala</span>
                         </div>
                         <h1>Join Fooddala!</h1>

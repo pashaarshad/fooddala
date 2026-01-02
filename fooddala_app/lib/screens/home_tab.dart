@@ -65,7 +65,7 @@ class _HomeTabState extends State<HomeTab> {
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('🍕', style: TextStyle(fontSize: 24)),
+                Image.asset('assets/images/logo.png', height: 28, width: 28),
                 const SizedBox(width: 8),
                 ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(

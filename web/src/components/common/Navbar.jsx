@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { FiHome, FiSearch, FiShoppingCart, FiUser, FiMenu, FiX, FiMapPin } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
@@ -36,7 +37,7 @@ export default function Navbar() {
             <div className={styles.container}>
                 {/* Logo */}
                 <Link href="/" className={styles.logo}>
-                    <span className={styles.logoIcon}>🍕</span>
+                    <Image src="/coollogo.png" alt="Fooddala" width={36} height={36} className={styles.logoImage} />
                     <span className={styles.logoText}>Fooddala</span>
                 </Link>
 

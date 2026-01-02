@@ -62,7 +62,11 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('🍕', style: TextStyle(fontSize: 80)),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 100,
+                      width: 100,
+                    ),
                     const SizedBox(height: 24),
                     ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(

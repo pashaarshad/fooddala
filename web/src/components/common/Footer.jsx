@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiFacebook, FiTwitter, FiInstagram, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import styles from './Footer.module.css';
 
@@ -10,7 +11,7 @@ export default function Footer() {
                     {/* Brand Section */}
                     <div className={styles.brand}>
                         <Link href="/" className={styles.logo}>
-                            <span className={styles.logoIcon}>🍕</span>
+                            <Image src="/coollogo.png" alt="Fooddala" width={32} height={32} />
                             <span className={styles.logoText}>Fooddala</span>
                         </Link>
                         <p className={styles.tagline}>

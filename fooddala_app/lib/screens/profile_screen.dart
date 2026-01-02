@@ -180,9 +180,10 @@ class ProfileScreen extends StatelessWidget {
                   context: context,
                   applicationName: 'Fooddala',
                   applicationVersion: '1.0.0',
-                  applicationIcon: const Text(
-                    '🍕',
-                    style: TextStyle(fontSize: 48),
+                  applicationIcon: Image.asset(
+                    'assets/images/logo.png',
+                    height: 48,
+                    width: 48,
                   ),
                   children: [const Text('Your favorite food delivery app')],
                 );
