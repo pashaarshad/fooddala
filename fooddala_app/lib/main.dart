@@ -12,7 +12,29 @@ import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyAW4Vd0lDylLbiNLm-y2U5QlvYjBPVlOw4",
+        appId: "1:536428139122:web:0e61b7a93f71d8c8d2e8eb",
+        messagingSenderId: "536428139122",
+        projectId: "fooddala-for--oath",
+        authDomain: "fooddala-for--oath.firebaseapp.com",
+        storageBucket: "fooddala-for--oath.firebasestorage.app",
+        measurementId: "G-GK3G9GHM7D",
+      ),
+    );
+  } else {
+    // For Android/iOS, ensure google-services.json / GoogleService-Info.plist is present
+    await Firebase.initializeApp();
+  }
+
   runApp(const MyApp());
 }
 

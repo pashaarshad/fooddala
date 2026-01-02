@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../services/api_service.dart';
@@ -26,7 +27,6 @@ class AuthProvider with ChangeNotifier {
       });
 
       if (response['success']) {
-        // Backend returns data.accessToken and data.user
         _token = response['data']['accessToken'];
         _user = User.fromJson(response['data']['user']);
         await _saveAuthData();
@@ -52,7 +52,6 @@ class AuthProvider with ChangeNotifier {
       });
 
       if (response['success']) {
-        // Backend returns data.accessToken and data.user
         _token = response['data']['accessToken'];
         _user = User.fromJson(response['data']['user']);
         await _saveAuthData();
@@ -70,6 +69,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // 1. Sign in with Google
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
       );
@@ -81,11 +81,31 @@ class AuthProvider with ChangeNotifier {
         return; // User canceled
       }
 
+      // 2. Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // 3. Create a new credential
+      final firebase_auth.AuthCredential credential =
+          firebase_auth.GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+
+      // 4. Sign in to Firebase with the credential
+      final firebase_auth.UserCredential userCredential = await firebase_auth
+          .FirebaseAuth
+          .instance
+          .signInWithCredential(credential);
+
+      final firebaseUser = userCredential.user!;
+
+      // 5. Send Firebase User details to Backend
       final response = await _api.post('/auth/google-firebase', {
-        'email': googleUser.email,
-        'name': googleUser.displayName,
-        'googleId': googleUser.id,
-        'photoUrl': googleUser.photoUrl,
+        'email': firebaseUser.email,
+        'name': firebaseUser.displayName,
+        'googleId': firebaseUser.uid, // Consistent Firebase UID
+        'photoUrl': firebaseUser.photoURL,
       });
 
       if (response['success']) {
