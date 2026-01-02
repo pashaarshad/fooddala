@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,49 +70,60 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Sign in with Google
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email', 'profile'],
-      );
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      firebase_auth.User? firebaseUser;
 
-      if (googleUser == null) {
-        _isLoading = false;
-        notifyListeners();
-        return; // User canceled
+      if (kIsWeb) {
+        // WEB: Use Firebase Auth Popup directly (bypassing GoogleSignIn plugin complexity)
+        // This relies on the API Key & AuthDomain configured in main.dart
+        final firebase_auth.GoogleAuthProvider authProvider =
+            firebase_auth.GoogleAuthProvider();
+        final firebase_auth.UserCredential userCredential = await firebase_auth
+            .FirebaseAuth
+            .instance
+            .signInWithPopup(authProvider);
+        firebaseUser = userCredential.user;
+      } else {
+        // MOBILE: Use GoogleSignIn plugin first to get tokens
+        final GoogleSignIn googleSignIn = GoogleSignIn(
+          scopes: ['email', 'profile'],
+        );
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+        if (googleUser == null) {
+          _isLoading = false;
+          notifyListeners();
+          return; // User canceled
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final firebase_auth.AuthCredential credential =
+            firebase_auth.GoogleAuthProvider.credential(
+              accessToken: googleAuth.accessToken,
+              idToken: googleAuth.idToken,
+            );
+
+        final firebase_auth.UserCredential userCredential = await firebase_auth
+            .FirebaseAuth
+            .instance
+            .signInWithCredential(credential);
+        firebaseUser = userCredential.user;
       }
 
-      // 2. Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      if (firebaseUser != null) {
+        // Send Firebase User details to Backend
+        final response = await _api.post('/auth/google-firebase', {
+          'email': firebaseUser.email,
+          'name': firebaseUser.displayName,
+          'googleId': firebaseUser.uid, // Consistent Firebase UID
+          'photoUrl': firebaseUser.photoURL,
+        });
 
-      // 3. Create a new credential
-      final firebase_auth.AuthCredential credential =
-          firebase_auth.GoogleAuthProvider.credential(
-            accessToken: googleAuth.accessToken,
-            idToken: googleAuth.idToken,
-          );
-
-      // 4. Sign in to Firebase with the credential
-      final firebase_auth.UserCredential userCredential = await firebase_auth
-          .FirebaseAuth
-          .instance
-          .signInWithCredential(credential);
-
-      final firebaseUser = userCredential.user!;
-
-      // 5. Send Firebase User details to Backend
-      final response = await _api.post('/auth/google-firebase', {
-        'email': firebaseUser.email,
-        'name': firebaseUser.displayName,
-        'googleId': firebaseUser.uid, // Consistent Firebase UID
-        'photoUrl': firebaseUser.photoURL,
-      });
-
-      if (response['success']) {
-        _token = response['data']['accessToken'];
-        _user = User.fromJson(response['data']['user']);
-        await _saveAuthData();
+        if (response['success']) {
+          _token = response['data']['accessToken'];
+          _user = User.fromJson(response['data']['user']);
+          await _saveAuthData();
+        }
       }
     } catch (e) {
       print("Google Login Error: $e");
