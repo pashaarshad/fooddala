@@ -354,6 +354,125 @@ class _AuthScreenState extends State<AuthScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+                if (_selectedRole == 'customer') ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Expanded(child: Divider(color: Colors.grey)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "or",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        try {
+                          await Provider.of<AuthProvider>(
+                            context,
+                            listen: false,
+                          ).loginWithGoogle();
+                        } catch (e) {
+                          if (mounted) {
+                            setState(() {
+                              _error = e
+                                  .toString()
+                                  .replaceAll('Exception:', '')
+                                  .trim();
+                            });
+                          }
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.white,
+                        side: BorderSide.none,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Using a colored G text since we don't have the asset handy
+                          Text(
+                            'G',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Roboto',
+                              color: Colors.blue[600],
+                            ),
+                          ),
+                          Text(
+                            'o',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Roboto',
+                              color: Colors.red[600],
+                            ),
+                          ),
+                          Text(
+                            'o',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Roboto',
+                              color: Colors.yellow[600],
+                            ),
+                          ),
+                          Text(
+                            'g',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Roboto',
+                              color: Colors.blue[600],
+                            ),
+                          ),
+                          Text(
+                            'l',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Roboto',
+                              color: Colors.green[600],
+                            ),
+                          ),
+                          Text(
+                            'e',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Roboto',
+                              color: Colors.red[600],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Continue with Google',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 24),
 
                 // Switch Mode

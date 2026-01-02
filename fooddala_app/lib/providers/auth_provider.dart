@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../services/api_service.dart';
@@ -57,6 +58,43 @@ class AuthProvider with ChangeNotifier {
         await _saveAuthData();
       }
     } catch (e) {
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loginWithGoogle() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        _isLoading = false;
+        notifyListeners();
+        return; // User canceled
+      }
+
+      final response = await _api.post('/auth/google-firebase', {
+        'email': googleUser.email,
+        'name': googleUser.displayName,
+        'googleId': googleUser.id,
+        'photoUrl': googleUser.photoUrl,
+      });
+
+      if (response['success']) {
+        _token = response['data']['accessToken'];
+        _user = User.fromJson(response['data']['user']);
+        await _saveAuthData();
+      }
+    } catch (e) {
+      print("Google Login Error: $e");
       rethrow;
     } finally {
       _isLoading = false;
