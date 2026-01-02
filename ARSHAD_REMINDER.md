@@ -24,7 +24,8 @@ This project has **3 main components**:
 | Component | Platform | Live URL |
 |-----------|----------|----------|
 | **Backend API** | Render | https://fooddala.onrender.com/api |
-| **Web App** | Vercel | https://fooddala.vercel.app |
+| **Web App** | Vercel | https://fooddala.arshadpasha.tech |
+| **Web App (Alt)** | Vercel | https://fooddala.vercel.app |
 | **Mobile App** | APK | Build locally and install |
 
 ---
