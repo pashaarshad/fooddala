@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "536428139122",
+    "project_id": "fooddala-for--oath",
+    "storage_bucket": "fooddala-for--oath.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536428139122:android:db169ba226525cefd2e8eb",
+        "android_client_info": {
+          "package_name": "com.example.fooddala_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "536428139122-0t3f1jgvrk6790krvmc7erh469c3ceud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBw5f6YWz70LjEKJUM3kEV-7kmPfrnW5iQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "536428139122-0t3f1jgvrk6790krvmc7erh469c3ceud.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
