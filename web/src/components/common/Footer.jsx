@@ -60,7 +60,7 @@ export default function Footer() {
                 </div>
 
                 <div className={styles.bottom}>
-                    <p>© 2024 Fooddala. Created by Arshad Pasha. All rights reserved.</p>
+                    <p>© 2026 Fooddala. Created by Arshad Pasha. All rights reserved.</p>
                     <div className={styles.legal}>
                         <Link href="/privacy">Privacy Policy</Link>
                         <Link href="/terms">Terms of Service</Link>

@@ -75,8 +75,8 @@ export default function Home() {
         </div>
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>
-            Delicious Food,
-            <span className={styles.highlight}> Delivered Fast</span>
+            Fooddala,
+            <span className={styles.highlight}> Created by Arshad Pasha</span>
           </h1>
           <p className={styles.heroSubtitle}>
             Order from the best restaurants near you. Fresh food, quick delivery, amazing taste.
