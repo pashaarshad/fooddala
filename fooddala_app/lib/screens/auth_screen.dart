@@ -375,7 +375,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton(
+                    height: 50,
+                    child: ElevatedButton(
                       onPressed: () async {
                         try {
                           await Provider.of<AuthProvider>(
@@ -393,79 +394,39 @@ class _AuthScreenState extends State<AuthScreen> {
                           }
                         }
                       },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        side: BorderSide.none,
+                        foregroundColor: Colors.grey[700],
+                        elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
+                        padding: EdgeInsets.zero,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Using a colored G text since we don't have the asset handy
-                          Text(
-                            'G',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Roboto',
-                              color: Colors.blue[600],
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Image.network(
+                              'https://developers.google.com/identity/images/g-logo.png',
+                              height: 24,
+                              width: 24,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.g_mobiledata,
+                                  size: 30,
+                                  color: Colors.blue,
+                                );
+                              },
                             ),
                           ),
-                          Text(
-                            'o',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Roboto',
-                              color: Colors.red[600],
-                            ),
-                          ),
-                          Text(
-                            'o',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Roboto',
-                              color: Colors.yellow[600],
-                            ),
-                          ),
-                          Text(
-                            'g',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Roboto',
-                              color: Colors.blue[600],
-                            ),
-                          ),
-                          Text(
-                            'l',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Roboto',
-                              color: Colors.green[600],
-                            ),
-                          ),
-                          Text(
-                            'e',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Roboto',
-                              color: Colors.red[600],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
                           const Text(
                             'Continue with Google',
                             style: TextStyle(
-                              color: Colors.black87,
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Roboto',
                             ),
                           ),
                         ],
