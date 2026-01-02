@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/restaurant_provider.dart';
 import '../utils/theme.dart';
-import '../models/restaurant.dart';
 import 'restaurant_detail_screen.dart';
 
 class CategoryScreen extends StatelessWidget {
