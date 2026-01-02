@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import api from '@/services/api';
+import { auth, googleProvider } from '@/config/firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -61,12 +63,38 @@ export function AuthProvider({ children }) {
         setUser(null);
     };
 
+    const startGoogleLogin = async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const firebaseUser = result.user;
+
+            const response = await api.post('/auth/google-firebase', {
+                email: firebaseUser.email,
+                name: firebaseUser.displayName,
+                googleId: firebaseUser.uid,
+                photoUrl: firebaseUser.photoURL
+            });
+
+            const { user, accessToken, refreshToken } = response.data.data;
+
+            Cookies.set('accessToken', accessToken, { expires: 7 });
+            Cookies.set('refreshToken', refreshToken, { expires: 30 });
+            setUser(user);
+
+            return user;
+        } catch (error) {
+            console.error("Google Login Error", error);
+            throw error;
+        }
+    };
+
     const value = {
         user,
         loading,
         login,
         register,
         logout,
+        startGoogleLogin,
         setUser,
         isAuthenticated: !!user,
     };

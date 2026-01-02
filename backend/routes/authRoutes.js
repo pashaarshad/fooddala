@@ -5,6 +5,7 @@ const {
     register,
     login,
     googleCallback,
+    googleFirebaseLogin,
     verifyEmail,
     forgotPassword,
     resetPassword,
@@ -39,6 +40,9 @@ router.get(
     passport.authenticate('google', { session: false, failureRedirect: '/login' }),
     googleCallback
 );
+
+router.post('/google-firebase', googleFirebaseLogin);
+
 
 // Protected routes
 router.post('/logout', protect, logout);

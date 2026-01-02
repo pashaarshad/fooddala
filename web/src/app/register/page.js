@@ -11,7 +11,7 @@ import styles from '../login/page.module.css';
 
 export default function RegisterPage() {
     const router = useRouter();
-    const { register } = useAuth();
+    const { register, startGoogleLogin } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -48,8 +48,16 @@ export default function RegisterPage() {
         }
     };
 
-    const handleGoogleLogin = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`;
+    const handleGoogleLogin = async () => {
+        try {
+            setLoading(true);
+            await startGoogleLogin();
+            router.push('/');
+        } catch (error) {
+            setError(error.message || 'Google signup failed');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

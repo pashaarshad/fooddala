@@ -42,7 +42,7 @@ const roleConfig = {
 
 export default function LoginPage() {
     const router = useRouter();
-    const { login } = useAuth();
+    const { login, startGoogleLogin } = useAuth();
     const [selectedRole, setSelectedRole] = useState('customer');
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
@@ -70,10 +70,23 @@ export default function LoginPage() {
         }
     };
 
-    const handleGoogleLogin = () => {
-        // Store selected role for after OAuth callback
-        localStorage.setItem('loginRole', selectedRole);
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/google`;
+    const handleGoogleLogin = async () => {
+        try {
+            setLoading(true);
+            const userData = await startGoogleLogin();
+
+            // Redirect based on user's role
+            const userRole = userData?.role || 'customer';
+            // If the user selected a different role in UI, we might want to update it in backend or just respect what they are.
+            // For now, let's respect the user's role from DB.
+
+            const redirectPath = roleConfig[userRole]?.redirect || '/';
+            router.push(redirectPath);
+        } catch (error) {
+            setError(error.message || 'Google login failed');
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Auto-fill test credentials

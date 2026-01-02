@@ -284,3 +284,64 @@ exports.getMe = asyncHandler(async (req, res) => {
         data: { user: req.user.toPublicJSON() },
     });
 });
+
+// @desc    Login with Firebase Google
+// @route   POST /api/auth/google-firebase
+// @access  Public
+exports.googleFirebaseLogin = asyncHandler(async (req, res) => {
+    const { email, name, googleId, photoUrl } = req.body;
+
+    if (!email) {
+        return res.status(400).json({
+            success: false,
+            message: 'Email is required',
+        });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+        // Update googleId if not present
+        if (!user.googleId) {
+            user.googleId = googleId;
+        }
+        // Update avatar if not present
+        if (!user.avatar && photoUrl) {
+            user.avatar = photoUrl;
+        }
+    } else {
+        // Create new user
+        // Note: password is required by schema validation if not handled carefully, 
+        // but typically for social auth we might set a dummy one or make it optional in schema. 
+        // In User.js, password is not marked required: true, but minlength is set.
+        // Mongoose validators usually run on required fields. Let's check schema again.
+        // Looking at User.js: password field has minlength but NOT required: true.
+        // So we can skip it.
+
+        user = await User.create({
+            name: name || email.split('@')[0],
+            email,
+            googleId,
+            avatar: photoUrl,
+            isVerified: true,
+        });
+    }
+
+    // Generate tokens
+    const accessToken = generateToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    // Save refresh token
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.json({
+        success: true,
+        message: 'Google login successful',
+        data: {
+            user: user.toPublicJSON(),
+            accessToken,
+            refreshToken,
+        },
+    });
+});
